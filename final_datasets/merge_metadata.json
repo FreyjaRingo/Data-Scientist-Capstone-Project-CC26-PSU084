@@ -1,0 +1,25 @@
+{
+  "food_master_path": "D:\\PPL 1\\DBD\\ORang A\\nutrimatch-capstone-dsA\\data\\processed\\food_master_clean.csv",
+  "food_master_score": 40,
+  "food_master_columns": [
+    "food_id",
+    "food_name",
+    "calories_100g",
+    "protein_100g",
+    "fat_100g",
+    "carbohydrate_100g",
+    "source",
+    "image_url",
+    "zero_calorie_flag",
+    "calorie_inconsistent_flag",
+    "calorie_macro_diff"
+  ],
+  "conservative_unknown": true,
+  "outputs": {
+    "train_ready": "D:\\PPL 1\\DBD\\outputs\\merged\\train_ready_dataset.csv",
+    "merge_summary": "D:\\PPL 1\\DBD\\outputs\\merged\\merge_summary.csv",
+    "food_master_standardized": "D:\\PPL 1\\DBD\\outputs\\merged\\food_master_standardized.csv",
+    "allergen_labels_aggregated": "D:\\PPL 1\\DBD\\outputs\\merged\\allergen_labels_aggregated.csv",
+    "metadata": "D:\\PPL 1\\DBD\\outputs\\merged\\merge_metadata.json"
+  }
+}

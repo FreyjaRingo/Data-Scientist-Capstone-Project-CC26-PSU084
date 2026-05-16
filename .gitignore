@@ -1,0 +1,18 @@
+# Python/cache
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# Local raw datasets and downloaded archives
+Dataset/
+*.zip
+*.gz
+*.crdownload
+
+# Extracted copy of Orang A repository; keep final merged artifacts in this repo instead
+ORang A/
+
+# Large/intermediate generated datasets
+outputs/
+final/
+src/
