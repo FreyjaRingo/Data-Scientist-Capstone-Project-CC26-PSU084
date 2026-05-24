@@ -1,0 +1,22 @@
+{
+  "rule_version": "food_context_rules_v1",
+  "dataset_path": "D:\\PPL 1\\DBD\\final_datasets\\train_ready_dataset.csv",
+  "rows": 1332,
+  "added_columns": [
+    "food_category",
+    "food_category_source",
+    "base_ingredient",
+    "base_ingredient_tags",
+    "suitable_breakfast",
+    "suitable_lunch",
+    "suitable_dinner",
+    "meal_time_tags",
+    "primary_meal_time",
+    "feature_rule_version"
+  ],
+  "notes": [
+    "Features are rule-based and intended to improve recommendation diversity.",
+    "Meal time is represented as both multilabel booleans and a primary class.",
+    "contains_unknown should still be used as an allergy safety guardrail."
+  ]
+}

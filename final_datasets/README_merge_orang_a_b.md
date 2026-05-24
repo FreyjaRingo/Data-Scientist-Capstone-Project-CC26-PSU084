@@ -13,7 +13,8 @@ File ini berisi:
 - fitur makanan/nutrisi dari Orang A,
 - label alergen dari Orang B,
 - status kualitas merge,
-- confidence label.
+- confidence label,
+- fitur konteks makanan untuk membantu variasi rekomendasi.
 
 Schema fitur pengguna dari Orang A juga disalin ke:
 
@@ -82,5 +83,19 @@ Selain `train_ready_dataset.csv`, folder ini juga berisi:
 - `merge_summary.csv`: ringkasan jumlah match/unmatched.
 - `food_master_standardized.csv`: versi standar dari output Orang A.
 - `user_profile_features_schema.csv`: schema fitur profil user/BMR/TDEE dari Orang A.
+- `feature_enrichment_summary.csv`: ringkasan fitur kategori makanan, bahan dasar, dan waktu makan.
+- `feature_enrichment_metadata.json`: metadata rule enrichment.
 - `allergen_labels_aggregated.csv`: label Orang B yang sudah diagregasi per nama makanan.
 - `merge_metadata.json`: metadata file input dan output.
+
+## Fitur konteks tambahan
+
+Untuk mengurangi rekomendasi yang monoton, `train_ready_dataset.csv` ditambah fitur:
+
+- `food_category`: kategori makanan, misalnya `berkuah`, `gorengan`, `sayuran`, `buah`, `lauk_hewani`, `lauk_nabati`, `karbohidrat_pokok`, `minuman`, `snack_dessert`, `bumbu_sambal`, atau `lainnya`.
+- `base_ingredient`: bahan dasar utama, misalnya `ayam`, `sapi`, `ikan`, `seafood`, `telur`, `kedelai`, `kacang`, `beras`, `gandum`, `umbi`, `sayuran`, atau `buah`.
+- `suitable_breakfast`, `suitable_lunch`, `suitable_dinner`: multilabel boolean untuk waktu makan yang cocok.
+- `meal_time_tags`: gabungan label waktu makan, misalnya `breakfast|lunch`.
+- `primary_meal_time`: kelas utama waktu makan, yaitu `breakfast`, `lunch`, atau `dinner`.
+
+Fitur ini dibuat secara rule-based dengan versi `food_context_rules_v1`. AI Engineer bisa memakai `food_category`, `base_ingredient`, dan `primary_meal_time` untuk diversifikasi ranking, sementara kolom `suitable_*` bisa dipakai sebagai filter meal plan.
