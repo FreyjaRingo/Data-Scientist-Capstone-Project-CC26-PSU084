@@ -5,14 +5,20 @@ __pycache__/
 
 # Local raw datasets and downloaded archives
 Dataset/
+orang_b/raw_datasets/
 *.zip
 *.gz
 *.crdownload
 
 # Extracted copy of Orang A repository; keep final merged artifacts in this repo instead
 ORang A/
+orang_a/nutrimatch-capstone-dsA/data/raw/
+orang_a/**/data/raw/
 
 # Large/intermediate generated datasets
 outputs/
 final/
 src/
+orang_b/outputs/
+orang_b/legacy_src/
+orang_b/previous_final_package/

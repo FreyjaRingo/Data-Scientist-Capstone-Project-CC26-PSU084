@@ -10,7 +10,11 @@ import pandas as pd
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-DATA_DIR = PROJECT_ROOT / "Dataset"
+DATA_DIR = PROJECT_ROOT / "raw_datasets" / "Dataset"
+if not DATA_DIR.exists():
+    DATA_DIR = PROJECT_ROOT / "Dataset"
+if not DATA_DIR.exists():
+    DATA_DIR = PROJECT_ROOT.parent / "Dataset"
 OUTPUT_DIR = PROJECT_ROOT / "outputs" / "orang_b"
 
 OFF_FILE = DATA_DIR / "en.openfoodfacts.org.products.csv"

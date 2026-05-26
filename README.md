@@ -1,91 +1,79 @@
-# NutriMatch Data Science Deliverables
+# DBD - NutriMatch Data Science Workspace
 
-Repository ini berisi deliverable Data Science NutriMatch yang ringan untuk GitHub. Dataset mentah tidak disimpan sebagai file di repo; sumbernya dicatat sebagai link agar repository tidak berat.
-
-## Struktur Folder
+Workspace lokal ini dirapikan berdasarkan pembagian kerja Data Science:
 
 ```text
-dataset_sources/
-  raw_dataset_links.md
-docs/
-  contribution_matrix.md
-  report_ready_summary.md
-  data_science_plan_nutrimatch.md
-  Project Plan - CC26-PSU084 (2).pdf
-  todolist.txt
-final_datasets/
-  train_ready_dataset.csv
-  user_profile_features_schema.csv
-  food_master_standardized.csv
-  merge_summary.csv
-  merge_metadata.json
-  feature_enrichment_summary.csv
-  feature_enrichment_metadata.json
-  README_merge_orang_a_b.md
-notebooks/
+DBD/
   orang_a/
-  orang_b_and_merge/
-scripts_python/
-MANIFEST.csv
-README.md
+  orang_b/
 ```
 
-## Pembagian Kerja
+## Orang A
 
-Ringkasan siapa mengerjakan apa ada di:
+Folder `orang_a/` berisi pekerjaan nutrisi, food master, profil pengguna, BMR/TDEE, target makro, dan EDA dari anggota Data Science pertama.
+
+Isi utama:
 
 ```text
-docs/contribution_matrix.md
+orang_a/
+  nutrimatch-capstone-dsA/
+    data/raw/
+    data/processed/
+    notebooks/
+    output/
+  notebooks/
 ```
 
-## Dataset Mentah
+Output penting dari Orang A:
 
-Link sumber dataset mentah ada di:
+- `orang_a/nutrimatch-capstone-dsA/data/processed/food_master_clean.csv`
+- `orang_a/nutrimatch-capstone-dsA/data/processed/user_profile_features_schema.csv`
+
+## Orang B
+
+Folder `orang_b/` berisi pekerjaan preprocessing alergen, ingredient mapping, merge dataset, enrichment fitur konteks makanan, serta dataset final siap pakai.
+
+Isi utama:
 
 ```text
-dataset_sources/raw_dataset_links.md
+orang_b/
+  raw_datasets/Dataset/
+  dataset_sources/
+  docs/
+  notebooks/
+  scripts_python/
+  final_datasets/
+  outputs/
 ```
 
-Dataset mentah sengaja tidak disimpan di repository agar aman untuk push ke GitHub. Jika reviewer ingin reproduksi pipeline, unduh dataset dari link tersebut dan letakkan sesuai path yang dijelaskan di dokumen sumber dataset.
+Output penting dari Orang B:
 
-## Dataset Final
+- `orang_b/final_datasets/train_ready_dataset.csv`
+- `orang_b/final_datasets/user_profile_features_schema.csv`
+- `orang_b/final_datasets/feature_enrichment_summary.csv`
+- `orang_b/final_datasets/feature_enrichment_metadata.json`
 
-Dataset utama untuk AI Engineer:
+## Dataset Baru
+
+Dataset tambahan yang baru dimasukkan berada di:
 
 ```text
-final_datasets/train_ready_dataset.csv
+orang_b/raw_datasets/Dataset/archive/
+orang_b/raw_datasets/Dataset/archive (1)/
+orang_b/raw_datasets/Dataset/archive (2)/
+orang_b/raw_datasets/Dataset/archive (3)/
 ```
 
-Dataset ini sudah berisi:
-
-- nutrisi makanan per 100g,
-- label alergen multi-label,
-- confidence label,
-- status merge,
-- fitur konteks makanan.
-
-Fitur konteks tambahan:
+Dataset tersebut sudah dipakai untuk memperkuat fitur:
 
 - `food_category`
 - `base_ingredient`
 - `suitable_breakfast`
 - `suitable_lunch`
 - `suitable_dinner`
-- `meal_time_tags`
 - `primary_meal_time`
+- `recipe_reference_match`
 
-Schema fitur profil user:
+## Catatan GitHub
 
-```text
-final_datasets/user_profile_features_schema.csv
-```
-
-## Notebook dan Script
-
-- Notebook Orang A: `notebooks/orang_a/`
-- Notebook Orang B dan merge: `notebooks/orang_b_and_merge/`
-- Script pipeline: `scripts_python/`
-
-## Catatan Keamanan Alergi
-
-Untuk kasus alergi, data yang tidak punya bukti cukup tidak dianggap aman. Baris yang tidak berhasil dipetakan diberi `contains_unknown=True` pada mode conservative agar sistem rekomendasi dapat memfilternya sebelum makanan ditampilkan ke pengguna.
+Folder raw dataset berukuran sangat besar dan tidak disarankan untuk dipush ke GitHub biasa. Dataset final yang aman untuk dipakai tim AI/Fullstack ada di `orang_b/final_datasets/`.

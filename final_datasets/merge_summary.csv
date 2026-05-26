@@ -1,9 +1,0 @@
-metric,value
-food_master_path,D:\PPL 1\DBD\ORang A\nutrimatch-capstone-dsA\data\processed\food_master_clean.csv
-food_master_score,40
-food_master_rows,1332
-train_ready_rows,1332
-exact_name_rows,258
-keyword_fallback_rows,3
-not_matched_rows,1071
-conservative_unknown,True
