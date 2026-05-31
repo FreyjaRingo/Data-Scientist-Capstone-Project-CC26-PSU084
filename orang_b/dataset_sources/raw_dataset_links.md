@@ -29,6 +29,15 @@ Dokumen ini menggantikan penyimpanan dataset mentah di repository. Dataset menta
 | Global Cuisine Meals with Diet Labels | `archive (2)/nutrition.csv` | https://www.kaggle.com/datasets/himanshikushwaha/global-cuisine-meals-with-diet-labels | Referensi label meal type: breakfast, lunch, dinner. |
 | Recipes Dataset 64k Dishes | `archive (3)/1_Recipe_csv.csv` | https://www.kaggle.com/datasets/prashantsingh001/recipes-dataset-64k-dishes | Referensi tambahan category, subcategory, dan ingredients untuk title matching. |
 
+## Dataset Tambahan Folder `new datasets/`
+
+| Nama dataset | File lokal yang dipakai | Sumber | Fungsi |
+|---|---|---|---|
+| Multi Cuisine Recipe Dataset | `new datasets/extracted/archive (1)/Multi_Cuisine_Recipe_Dataset.csv` | Arsip lokal dari user; URL asal perlu dikonfirmasi ulang jika diminta reviewer. | Referensi nama menu, category, ingredients, dan steps untuk validasi bahwa item rekomendasi berupa makanan/menu. |
+| South Asian Recipes with Nutrition & Steps | `new datasets/extracted/archive (2)/recipes_master.csv`, `recipe_ingredients.csv`, `recipe_nutrition.csv`, `recipe_steps.csv` | https://www.kaggle.com/datasets/ahsanneural/10k-south-asian-recipes-with-nutrition-and-steps | Referensi recipe/menu, kategori, meal type, dan bahan untuk memperkuat filter menu-ready. |
+| Food and Vegetable Nutrition Dataset | `new datasets/extracted/archive (4)/NutritionalFacts_Fruit_Vegetables_Seafood.csv`, `new datasets/extracted/archive (5)/NutritionalFacts_Fruit_Vegetables_Seafood.csv` | https://www.kaggle.com/datasets/cid007/food-and-vegetable-nutrition-dataset/data | Referensi bahwa buah, sayuran, dan seafood tetap boleh masuk rekomendasi walau bukan menu masakan. |
+| Nutrition5k Dataset | `new datasets/dish_ingredients.csv`, `new datasets/dish_nutrition_values.csv`, `new datasets/ingredients_metadata.csv` | https://www.kaggle.com/datasets/gillesokhin/nutrition5k-dataset/data | Referensi dish-level nutrition dan ingredient composition; tidak langsung ditambahkan sebagai row karena tidak memiliki nama dish siap tampil. |
+
 ## Struktur Lokal untuk Reproduksi
 
 Jika ingin menjalankan notebook/script dari awal, letakkan file mentah ke folder:
@@ -51,6 +60,7 @@ orang_b/raw_datasets/Dataset/
   archive (1)/
   archive (2)/
   archive (3)/
+new datasets/
 ```
 
 ## Catatan Lisensi dan Ukuran
