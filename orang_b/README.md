@@ -27,7 +27,8 @@ orang_b/
 3. Menggabungkan label alergen dengan food master dari Orang A.
 4. Menambahkan fitur konteks makanan dari nama makanan dan dataset resep tambahan.
 5. Memfilter item agar rekomendasi berisi makanan/menu yang layak dimakan, bukan bahan mentah.
-6. Menghasilkan dataset final siap pakai untuk AI Engineer dan Fullstack.
+6. Menambahkan status halal berbasis rule dari nama makanan dan ingredient text.
+7. Menghasilkan dataset final siap pakai untuk AI Engineer dan Fullstack.
 
 ## Dataset Tambahan yang Dipakai
 
@@ -57,6 +58,9 @@ Dataset tersebut dipakai untuk memperkuat:
 - `menu_reference_match`
 - `recommendation_item_type`
 - `is_recommendable_food`
+- `halal_status`
+- `is_halal_candidate`
+- `contains_non_halal_ingredient`
 
 ## Output Final
 
@@ -71,6 +75,16 @@ final_datasets/menu_ready_filter_metadata.json
 ```
 
 `train_ready_dataset.csv` adalah file utama untuk training/rekomendasi. File ini sudah difilter agar berisi menu/makanan siap rekomendasi, buah, sayur, snack, minuman, dan staple yang layak dimakan. Bahan mentah, bumbu, kondimen, tepung, beras mentah, serta protein hewani mentah dipindahkan ke `train_ready_dataset_full_audit.csv` dengan flag dan alasan eksklusi.
+
+Kolom halal yang dipakai:
+
+- `halal_status`: `halal_candidate`, `non_halal`, atau `needs_review`.
+- `is_halal_candidate`: aman untuk mode halal-only jika bernilai `True`.
+- `contains_non_halal_ingredient`: `True` untuk keyword eksplisit seperti babi, anjing, atau alkohol.
+- `non_halal_ingredient_tags`: alasan keyword eksplisit, misalnya `pork`, `dog`, atau `alcohol`.
+- `halal_review_reason`: item yang perlu review manual, misalnya hewan sensitif/eksotik seperti penyu, paniki, katak, keong, atau kura-kura.
+
+Catatan: `halal_candidate` bukan sertifikasi halal resmi, melainkan hasil rule-based filtering agar AI Engineer punya guardrail rekomendasi.
 
 ## Script Penting
 

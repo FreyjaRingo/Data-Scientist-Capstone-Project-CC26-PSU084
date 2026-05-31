@@ -31,6 +31,13 @@ MENU_COLUMNS = [
     "recommendation_item_type",
     "recommendation_confidence",
     "recommendation_exclusion_reason",
+    "halal_status",
+    "is_halal_candidate",
+    "contains_non_halal_ingredient",
+    "non_halal_ingredient_tags",
+    "halal_review_reason",
+    "halal_confidence",
+    "halal_rule_version",
     "menu_ready_rule_version",
 ]
 
@@ -39,6 +46,23 @@ DIRECT_ALLOW_CATEGORIES = {"buah", "sayuran", "snack_dessert", "minuman", "goren
 PROTEIN_CATEGORIES = {"lauk_hewani", "lauk_nabati"}
 STAPLE_BASES = {"beras", "gandum", "umbi", "jagung", "singkong"}
 ANIMAL_BASES = {"ayam", "sapi", "kambing", "ikan", "seafood", "telur", "daging_lain", "unggas_lain"}
+
+HALAL_RULE_VERSION = "halal_context_rules_v1"
+
+NON_HALAL_RULES: list[tuple[str, list[str]]] = [
+    ("pork", ["babi", "pork", "bacon", "lard", "prosciutto"]),
+    ("processed_pork", ["ham"]),
+    ("dog", ["anjing", "dog"]),
+    ("alcohol", ["alkohol", "bir", "beer", "wine", "arak", "mirin", "sake", "rum", "vodka", "whisky", "brandy", "tuak"]),
+]
+
+HALAL_REVIEW_RULES: list[tuple[str, list[str]]] = [
+    ("exotic_or_sensitive_animal", ["paniki", "penyu", "buaya", "katak", "kura-kura", "kura kura", "biawak", "ular", "kelelawar", "bekicot", "keong"]),
+]
+
+NON_HALAL_FALSE_POSITIVE_PHRASES = [
+    "kacang babi",
+]
 
 INGREDIENT_ONLY_PHRASES = [
     "asam gelugur",
@@ -515,6 +539,66 @@ def is_hard_ingredient_name(name: str) -> bool:
     )
 
 
+def halal_text_for_matching(row: pd.Series) -> str:
+    return normalize_text(
+        " ".join(
+            str(row.get(column, ""))
+            for column in [
+                "food_name",
+                "food_name_clean",
+                "food_category",
+                "base_ingredient",
+                "recipe_ingredients_reference",
+            ]
+        )
+    )
+
+
+def collect_halal_rule_tags(text: str, rules: list[tuple[str, list[str]]]) -> list[str]:
+    clean_text = text
+    for phrase in NON_HALAL_FALSE_POSITIVE_PHRASES:
+        clean_text = clean_text.replace(phrase, " ")
+    tags = [tag for tag, keywords in rules if has_any(clean_text, keywords)]
+    return tags
+
+
+def classify_halal_status(row: pd.Series) -> tuple[str, bool, bool, str, str, str, str]:
+    text = halal_text_for_matching(row)
+    non_halal_tags = collect_halal_rule_tags(text, NON_HALAL_RULES)
+    if non_halal_tags:
+        return (
+            "non_halal",
+            False,
+            True,
+            "|".join(non_halal_tags),
+            "explicit_non_halal_keyword",
+            "high",
+            HALAL_RULE_VERSION,
+        )
+
+    review_tags = collect_halal_rule_tags(text, HALAL_REVIEW_RULES)
+    if review_tags:
+        return (
+            "needs_review",
+            False,
+            False,
+            "",
+            "|".join(review_tags),
+            "medium",
+            HALAL_RULE_VERSION,
+        )
+
+    return (
+        "halal_candidate",
+        True,
+        False,
+        "",
+        "",
+        "medium",
+        HALAL_RULE_VERSION,
+    )
+
+
 def is_ingredient_only(name: str, category: str, base: str) -> bool:
     hard_ingredient = is_hard_ingredient_name(name)
     if category == "bumbu_sambal" and not (has_prepared_context(name) and not hard_ingredient):
@@ -618,6 +702,13 @@ def apply_context_corrections(df: pd.DataFrame) -> pd.DataFrame:
         df.loc[mask, "base_ingredient"] = base_value
         df.loc[mask, "food_category"] = "lauk_hewani"
         notes.loc[mask] = notes.loc[mask].map(lambda value, item=base_value: f"{value}|animal_base_{item}".strip("|"))
+
+    kacang_babi_mask = names.map(lambda value: phrase_has_any(value, NON_HALAL_FALSE_POSITIVE_PHRASES))
+    df.loc[kacang_babi_mask, "base_ingredient"] = "kacang"
+    df.loc[kacang_babi_mask, "food_category"] = "lauk_nabati"
+    notes.loc[kacang_babi_mask] = notes.loc[kacang_babi_mask].map(
+        lambda value: f"{value}|kacang_babi_legume_exception".strip("|")
+    )
 
     rice_mask = names.map(lambda value: has_any(value, ["beras", "bihun", "ketan", "lontong", "ketupat", "bubur", "nasi"]))
     df.loc[rice_mask, "base_ingredient"] = "beras"
@@ -727,6 +818,18 @@ def build_menu_ready_dataset() -> pd.DataFrame:
         "recommendation_exclusion_reason",
     ]
     df = pd.concat([df, classified], axis=1)
+
+    halal_results = df.apply(classify_halal_status, axis=1, result_type="expand")
+    halal_results.columns = [
+        "halal_status",
+        "is_halal_candidate",
+        "contains_non_halal_ingredient",
+        "non_halal_ingredient_tags",
+        "halal_review_reason",
+        "halal_confidence",
+        "halal_rule_version",
+    ]
+    df = pd.concat([df, halal_results], axis=1)
     df["menu_ready_rule_version"] = RULE_VERSION
 
     df.to_csv(FULL_AUDIT_PATH, index=False)
@@ -767,8 +870,16 @@ def write_summary_and_metadata(audit_df: pd.DataFrame, final_df: pd.DataFrame, m
 
     for value, count in audit_df["recommendation_item_type"].value_counts(dropna=False).items():
         rows.append({"metric": f"item_type:{value}", "value": int(count)})
-    for value, count in audit_df["recommendation_exclusion_reason"].replace("", "included").value_counts(dropna=False).items():
+    for value, count in audit_df["recommendation_exclusion_reason"].fillna("").replace("", "included").value_counts(dropna=False).items():
         rows.append({"metric": f"exclusion_reason:{value}", "value": int(count)})
+    for value, count in final_df["halal_status"].value_counts(dropna=False).items():
+        rows.append({"metric": f"halal_status_final:{value}", "value": int(count)})
+    rows.append(
+        {
+            "metric": "contains_non_halal_ingredient_final",
+            "value": int(final_df["contains_non_halal_ingredient"].sum()),
+        }
+    )
     pd.DataFrame(rows).to_csv(SUMMARY_PATH, index=False)
 
     metadata = {
@@ -785,6 +896,8 @@ def write_summary_and_metadata(audit_df: pd.DataFrame, final_df: pd.DataFrame, m
             "train_ready_dataset_full_audit.csv keeps all source rows with flags and exclusion reasons for reporting and review.",
             "New recipe datasets are used as menu-reference signals. They are not appended as new food rows because several sources do not share the same per-100g nutrition basis and some dish datasets do not include dish names.",
             "Raw ingredients, condiments, seasoning components, uncooked staples, and raw animal proteins are excluded from the main train-ready file.",
+            "Halal status is rule-based from food names and ingredient text. halal_candidate is not a formal halal certification.",
+            "non_halal marks explicit pork/dog/alcohol keywords. needs_review marks sensitive or uncommon animal items that should not be recommended in halal-only mode without manual review.",
         ],
         "added_columns": MENU_COLUMNS,
     }
